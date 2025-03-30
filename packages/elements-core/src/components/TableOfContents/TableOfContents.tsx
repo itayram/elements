@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { useFirstRender } from '../../hooks/useFirstRender';
 import { resolveRelativeLink } from '../../utils/string';
-import { VersionBadge } from '../Docs/HttpOperation/Badges';
+import { deprecateTitle, VersionBadge } from '../Docs/HttpOperation/Badges';
 import {
   NODE_GROUP_ICON,
   NODE_GROUP_ICON_COLOR,
@@ -32,6 +32,7 @@ import {
   isNode,
   isNodeGroup,
 } from './utils';
+import { HttpCodeColor } from '@stoplight/elements-core/constants';
 
 const ActiveIdContext = React.createContext<string | undefined>(undefined);
 const LinkContext = React.createContext<CustomLinkComponent | undefined>(undefined);
@@ -50,6 +51,8 @@ export const TableOfContents = React.memo<TableOfContentsProps>(
     const container = React.useRef<HTMLDivElement>(null);
     const child = React.useRef<HTMLDivElement>(null);
     const firstRender = useFirstRender();
+
+    const [schemasHidden, setSchemasHidden] = React.useState<boolean>(true);
 
     React.useEffect(() => {
       // setTimeout to handle scrollTo after groups expand to display active GroupItem
@@ -79,7 +82,9 @@ export const TableOfContents = React.memo<TableOfContentsProps>(
             <ActiveIdContext.Provider value={activeId}>
               {tree.map((item, key) => {
                 if (isDivider(item)) {
-                  return <Divider key={key} item={item} isInResponsiveMode={isInResponsiveMode} />;
+                  return (
+                    <Divider setSchemasHidden={setSchemasHidden} schemasHidden={schemasHidden} key={key} item={item} />
+                  );
                 }
 
                 return (
@@ -87,6 +92,7 @@ export const TableOfContents = React.memo<TableOfContentsProps>(
                     key={key}
                     item={item}
                     depth={0}
+                    schemasHidden={schemasHidden}
                     maxDepthOpenByDefault={maxDepthOpenByDefault}
                     onLinkClick={onLinkClick}
                     isInResponsiveMode={isInResponsiveMode}
@@ -105,19 +111,42 @@ TableOfContents.displayName = 'TableOfContents';
 const Divider = React.memo<{
   item: TableOfContentsDivider;
   isInResponsiveMode?: boolean;
-}>(({ item, isInResponsiveMode = false }) => {
+  schemasHidden: boolean;
+  setSchemasHidden: React.Dispatch<React.SetStateAction<boolean>>;
+}>(({ item, setSchemasHidden, schemasHidden, isInResponsiveMode = false }) => {
   return (
     <Box
       pl={4}
+      pr={4}
       mb={2}
       mt={6}
-      textTransform="uppercase"
-      fontSize={isInResponsiveMode ? 'lg' : 'sm'}
-      lineHeight="relaxed"
-      letterSpacing="wide"
-      fontWeight="bold"
+      h="md"
+      cursor="pointer"
+      className={item.title == 'Schemas' ? 'hover:sl-bg-canvas-200' : ''}
+      display="flex"
+      alignItems="center"
+      justifyContent="between"
+      onClick={(e: React.MouseEvent) => {
+        if (item.title == 'Schemas') {
+          e.stopPropagation();
+          e.preventDefault();
+          setSchemasHidden(isSchemasHidden => !isSchemasHidden);
+        }
+      }}
     >
-      {item.title}
+      <Box
+        textTransform="uppercase"
+        fontSize="sm"
+        lineHeight="relaxed"
+        letterSpacing="wide"
+        fontWeight="bold"
+        userSelect="none"
+      >
+        {item.title}
+      </Box>
+      {item.title == 'Schemas' && (
+        <Box as={Icon} icon={['fas', schemasHidden ? 'chevron-right' : 'chevron-down']} color="muted" fixedWidth />
+      )}
     </Box>
   );
 });
@@ -128,8 +157,9 @@ const GroupItem = React.memo<{
   item: TableOfContentsGroupItem;
   isInResponsiveMode?: boolean;
   maxDepthOpenByDefault?: number;
+  schemasHidden?: boolean;
   onLinkClick?(): void;
-}>(({ item, depth, maxDepthOpenByDefault, isInResponsiveMode, onLinkClick }) => {
+}>(({ item, depth, maxDepthOpenByDefault, isInResponsiveMode, schemasHidden, onLinkClick }) => {
   if (isExternalLink(item)) {
     return (
       <Box as="a" href={item.url} target="_blank" rel="noopener noreferrer" display="block">
@@ -152,6 +182,9 @@ const GroupItem = React.memo<{
       />
     );
   } else if (isNode(item)) {
+    if (item.type == 'model' && schemasHidden) {
+      return <></>;
+    }
     return (
       <Node
         depth={depth}
@@ -301,9 +334,10 @@ const Item = React.memo<{
   id?: string;
   icon?: React.ReactElement<typeof Icon>;
   meta?: React.ReactNode;
+  deprecated?: boolean;
   isInResponsiveMode?: boolean;
   onClick?: (e: React.MouseEvent) => void;
-}>(({ depth, isActive, id, title, meta, icon, isInResponsiveMode, onClick }) => {
+}>(({ depth, isActive, id, title, meta, icon, deprecated, isInResponsiveMode, onClick }) => {
   return (
     <Flex
       id={id}
@@ -319,7 +353,7 @@ const Item = React.memo<{
       align="center"
       userSelect="none"
       onClick={onClick}
-      title={title}
+      title={!deprecated ? title : deprecateTitle}
     >
       {icon}
 
@@ -331,7 +365,12 @@ const Item = React.memo<{
         textOverflow="truncate"
         fontSize={isInResponsiveMode ? 'lg' : 'base'}
       >
-        {title}
+        <Box display="flex" alignItems="center">
+          {deprecated && <Box style={{ color: HttpCodeColor[4], fontWeight: '900' }}>!</Box>}
+          <Box style={{ marginInlineStart: deprecated ? '0.5rem' : '0.8rem', opacity: deprecated ? '0.4' : '1' }}>
+            {title}
+          </Box>
+        </Box>
       </Box>
 
       <Flex alignItems="center" fontSize={isInResponsiveMode ? 'base' : 'xs'}>
@@ -389,6 +428,7 @@ const Node = React.memo<{
           )
         }
         meta={meta}
+        deprecated={item.deprecated}
         isInResponsiveMode={isInResponsiveMode}
         onClick={handleClick}
       />

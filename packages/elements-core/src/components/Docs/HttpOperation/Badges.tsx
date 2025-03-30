@@ -4,6 +4,10 @@ import React from 'react';
 
 import { badgeDefaultBackgroundColor, badgeDefaultColor } from '../../../constants';
 
+export const deprecateTitle =
+   'This operation has been marked as deprecated, which means it could be removed at some point in the future.';
+ 
+
 export const DeprecatedBadge: React.FC = () => (
   <Tooltip
     renderTrigger={
@@ -12,7 +16,7 @@ export const DeprecatedBadge: React.FC = () => (
       </Badge>
     }
   >
-    This operation has been marked as deprecated, which means it could be removed at some point in the future.
+    {deprecateTitle}
   </Tooltip>
 );
 

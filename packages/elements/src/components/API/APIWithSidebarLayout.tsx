@@ -135,14 +135,42 @@ export const Sidebar: React.FC<SidebarProps> = ({ serviceNode, logo, container, 
 
   return (
     <>
-      <Flex ml={4} mb={5} alignItems="center">
-        {logo ? (
-          <Logo logo={{ url: logo, altText: 'logo' }} />
-        ) : (
-          serviceNode.data.logo && <Logo logo={serviceNode.data.logo} />
-        )}
-        <Heading size={4}>{serviceNode.name}</Heading>
-      </Flex>
+      <a
+        href="/"
+        style={{
+          fontSize: 'smaller',
+          width: 'fit-content',
+          marginBottom: '1em',
+          marginLeft: '0.5em',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.color = '#2c97ff';
+          e.currentTarget.style.cursor = 'pointer';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.color = 'inherit';
+          e.currentTarget.style.cursor = 'default';
+        }}
+      >
+        <span
+          style={{
+            marginRight: '0.35em',
+          }}
+        >
+          &#8592;
+        </span>
+        Home
+      </a>
+      <Link to={'/'} className="customizable-header-logo" style={{ cursor: 'pointer' }}>
+        <Flex ml={4} mb={5} alignItems="center">
+          {logo ? (
+            <Logo logo={{ url: logo, altText: 'logo' }} />
+          ) : (
+            serviceNode.data.logo && <Logo logo={serviceNode.data.logo} />
+          )}
+          <Heading size={4}>{serviceNode.name}</Heading>
+        </Flex>
+      </Link>
       <Flex flexGrow flexShrink overflowY="auto" direction="col">
         <TableOfContents
           tree={tree}

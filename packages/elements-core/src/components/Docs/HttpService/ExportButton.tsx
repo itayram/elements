@@ -19,7 +19,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ original, bundled })
   }, [original, bundled]);
 
   return (
-    <Box>
+    <Box className="customizable-export-button" display="hidden">
       <Menu
         aria-label="Export"
         items={menuItems}

@@ -46,6 +46,8 @@ export type TableOfContentsNode<
   type: T;
   meta: string;
   version?: string;
+  deprecated?: boolean;
+  showTryIt?: boolean;
 };
 
 export type TableOfContentsNodeGroup = TableOfContentsNode<'http_service'> & TableOfContentsGroup;

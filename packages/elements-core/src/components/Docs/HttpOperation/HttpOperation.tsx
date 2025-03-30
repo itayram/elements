@@ -7,6 +7,7 @@ import {
   NodeAnnotation,
   useThemeIsDark,
   VStack,
+  CopyButton,
 } from '@stoplight/mosaic';
 import { withErrorBoundary } from '@stoplight/react-error-boundary';
 import { HttpMethod, IHttpEndpointOperation, IHttpOperation } from '@stoplight/types';
@@ -37,9 +38,10 @@ const HttpOperationComponent = React.memo<HttpOperationProps>(
     const { nodeHasChanged } = useOptionsCtx();
     const data = useResolvedObject(unresolvedData) as IHttpEndpointOperation;
     const { ref: layoutRef, isCompact } = useIsCompact(layoutOptions);
-
+    console.log(data);
     const mocking = React.useContext(MockingContext);
     const isDeprecated = !!data.deprecated;
+    const showTryIt = data.extensions && 'x-showTryIt' in data.extensions && !!data.extensions['x-showTryIt'];
     const isInternal = !!data.internal;
 
     const [responseMediaType, setResponseMediaType] = React.useState('');
@@ -72,7 +74,7 @@ const HttpOperationComponent = React.memo<HttpOperationProps>(
       />
     );
 
-    const tryItPanel = !layoutOptions?.hideTryItPanel && (
+    const tryItPanel = showTryIt && !layoutOptions?.hideTryItPanel && (
       <TryItWithRequestSamples
         httpOperation={data}
         responseMediaType={responseMediaType}
@@ -156,13 +158,14 @@ function MethodPathInner({ method, path, chosenServerUrl }: MethodPathProps & { 
 
   const pathElem = (
     <Flex overflowX="hidden" fontSize="lg" userSelect="all">
-      <Box dir="ltr" textOverflow="truncate" overflowX="hidden">
-        <Box as="span" dir="ltr" color="muted" style={{ unicodeBidi: 'bidi-override' }}>
-          {chosenServerUrl}
-        </Box>
-        <Box as="span" fontWeight="semibold" flex={1}>
-          {path}
-        </Box>
+      <Box fontSize="lg" flex={1} display="flex" alignItems="center" textOverflow="truncate" overflowX="hidden">
+        <span>
+          {chosenServerUrl && <span style={{ color: 'muted', direction: 'rtl' }}>{chosenServerUrl}</span>}
+          <span style={{ fontWeight: '700' }}>{path}</span>
+        </span>
+      </Box>
+      <Box style={{ marginInlineStart: '0.5rem', minWidth: '3.5rem', display: 'flex', justifyContent: 'end' }}>
+        <CopyButton copyValue={chosenServerUrl + path} />
       </Box>
     </Flex>
   );

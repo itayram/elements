@@ -163,6 +163,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
       deprecated: true
+      x-showTryIt: true
       description: |-
         Don't use this endpoint. Notice it's deprecated.
 
