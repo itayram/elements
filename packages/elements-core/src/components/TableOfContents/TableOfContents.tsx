@@ -32,7 +32,6 @@ import {
   isNode,
   isNodeGroup,
 } from './utils';
-import { HttpCodeColor } from '@stoplight/elements-core/constants';
 
 const ActiveIdContext = React.createContext<string | undefined>(undefined);
 const LinkContext = React.createContext<CustomLinkComponent | undefined>(undefined);
@@ -366,7 +365,7 @@ const Item = React.memo<{
         fontSize={isInResponsiveMode ? 'lg' : 'base'}
       >
         <Box display="flex" alignItems="center">
-          {deprecated && <Box style={{ color: HttpCodeColor[4], fontWeight: '900' }}>!</Box>}
+          {deprecated && <Box style={{ color: 'orange', fontWeight: '900' }}>!</Box>}
           <Box style={{ marginInlineStart: deprecated ? '0.5rem' : '0.8rem', opacity: deprecated ? '0.4' : '1' }}>
             {title}
           </Box>
