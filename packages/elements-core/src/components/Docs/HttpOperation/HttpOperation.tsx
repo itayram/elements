@@ -74,13 +74,13 @@ const HttpOperationComponent = React.memo<HttpOperationProps>(
       />
     );
 
-    const tryItPanel = showTryIt && !layoutOptions?.hideTryItPanel && (
+    const tryItPanel = !layoutOptions?.hideTryItPanel && (
       <TryItWithRequestSamples
         httpOperation={data}
         responseMediaType={responseMediaType}
         responseStatusCode={responseStatusCode}
         requestBodyIndex={requestBodyIndex}
-        hideTryIt={layoutOptions?.hideTryIt}
+        hideTryIt={layoutOptions?.hideTryIt || !showTryIt}
         hideTryItPanel={layoutOptions?.hideTryItPanel}
         hideSamples={layoutOptions?.hideSamples}
         tryItCredentialsPolicy={tryItCredentialsPolicy}

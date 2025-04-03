@@ -138,7 +138,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ serviceNode, logo, container, 
       <a
         href="/"
         style={{
-          fontSize: 'smaller',
           width: 'fit-content',
           marginBottom: '1em',
           marginLeft: '0.5em',
@@ -159,7 +158,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ serviceNode, logo, container, 
         >
           &#8592;
         </span>
-        Home
+        Back
       </a>
       <Link to={'/'} className="customizable-header-logo" style={{ cursor: 'pointer' }}>
         <Flex ml={4} mb={5} alignItems="center">
