@@ -38,7 +38,7 @@ const HttpOperationComponent = React.memo<HttpOperationProps>(
     const { nodeHasChanged } = useOptionsCtx();
     const data = useResolvedObject(unresolvedData) as IHttpEndpointOperation;
     const { ref: layoutRef, isCompact } = useIsCompact(layoutOptions);
-    console.log(data);
+
     const mocking = React.useContext(MockingContext);
     const isDeprecated = !!data.deprecated;
     const showTryIt = data.extensions && 'x-showTryIt' in data.extensions && !!data.extensions['x-showTryIt'];
